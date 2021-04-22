@@ -1,1 +1,1 @@
-# feed_scrapper
+# Python Feed Scrapper Console Application
