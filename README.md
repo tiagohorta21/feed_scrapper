@@ -12,7 +12,9 @@ The objective of this programming assignment is to code a feed alerter. Your pro
   
     (b) Feeds from the list can be activated/deactivated in runtime
       • $ activate-feed http://rss.cnn.com/rss/edition.rss
-      • $ deactivate-feed http://rss.cnn.com/rss/edition.rss (c) load feeds from a file containing a list of urls (one per line)
+      • $ deactivate-feed http://rss.cnn.com/rss/edition.rss 
+      
+    (c) load feeds from a file containing a list of urls (one per line)
       • $ load list-of-feeds-file.txt
     
     (d) Ask the database for news containing given words. E.g.:
