@@ -5,7 +5,7 @@ The objective of this programming assignment is to code a feed alerter. Your pro
   2. {5/20} Store feed’s data in a database. If necessary choose some of the usual fields (e.g., title, summary etc.)
   3. {10/20} Interact with a user allowing him to do some commands, e.g.: 
   
-    (a) list/add/remove feeds on run time (memory and database)
+    (a) List/add/remove feeds on run time (memory and database)
       • $ list-feeds
       • $ add-feed http://rss.cnn.com/rss/edition.rss
       • $ remove-feed http://rss.cnn.com/rss/edition.rss
@@ -14,7 +14,7 @@ The objective of this programming assignment is to code a feed alerter. Your pro
       • $ activate-feed http://rss.cnn.com/rss/edition.rss
       • $ deactivate-feed http://rss.cnn.com/rss/edition.rss 
       
-    (c) load feeds from a file containing a list of urls (one per line)
+    (c) Load feeds from a file containing a list of urls (one per line)
       • $ load list-of-feeds-file.txt
     
     (d) Ask the database for news containing given words. E.g.:
