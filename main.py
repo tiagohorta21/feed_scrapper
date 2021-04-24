@@ -17,7 +17,9 @@ def listFeeds():
 
     print("\nCurrent feeds:")
     for count, feed in enumerate(feeds):
-      print(str(count + 1) + " - " + feed[1])
+      # List only the active feeds
+      if(feed[4]):
+        print(str(count + 1) + " - " + feed[1])
 
 def addFeed(feed):
     # Get CNN feed
@@ -28,7 +30,7 @@ def addFeed(feed):
     cursor = connection.cursor()
 
     # Insert feed into database
-    cursor.execute("INSERT INTO Feeds VALUES (?,?,?,?)", (None, response.feed.title, response.href, response.updated))
+    cursor.execute("INSERT INTO Feeds VALUES (?,?,?,?,?)", (None, response.feed.title, response.href, response.updated, 1))
     feedId = cursor.lastrowid
     # Insert feed entries into database
     for entry in response.entries:
@@ -57,12 +59,42 @@ def removeFeed(feed):
     connection.close()
 
 
+def activateFeed(feed):
+    # Open database connection
+    connection = sqlite3.connect("tp1.db")
+    cursor = connection.cursor()
+    
+    # Activate feed
+    cursor.execute("UPDATE Feeds SET active='1' WHERE url=?", (feed,))
+
+    # Save (commit) the changes
+    connection.commit()
+    # We can also close the connection if we are done with it.s
+    # Just be sure any changes have been committed or they will be lost.
+    connection.close()
+
+def deactivateFeed(feed):
+    # Open database connection
+    connection = sqlite3.connect("tp1.db")
+    cursor = connection.cursor()
+    
+    # Activate feed
+    cursor.execute("UPDATE Feeds SET active='0' WHERE url=?", (feed,))
+
+    # Save (commit) the changes
+    connection.commit()
+    # We can also close the connection if we are done with it.s
+    # Just be sure any changes have been committed or they will be lost.
+    connection.close()
+
 def menu():
 
     while True:
         print("\n1 - List all feeds")
         print("2 - Add feed from url")
         print("3 - Remove feed from url")
+        print("4 - Activate Feed")
+        print("5 - Deactivate Feed")
         print("x - Exit Application\n")
         op = input().split()
         if op:
@@ -76,6 +108,14 @@ def menu():
                 print("\nPaste the RSS feed you want to remove: ")
                 feed = input()
                 removeFeed(feed)
+            elif op[0] == "4":
+                print("\nPaste the RSS feed you want to activate: ")
+                feed = input()
+                activateFeed(feed)
+            elif op[0] == "5":
+                print("\nPaste the RSS feed you want to deactivate: ")
+                feed = input()
+                deactivateFeed(feed)
             elif op[0] == "x":
                 break
 
