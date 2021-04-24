@@ -2,7 +2,7 @@
 import sqlite3
 import feedparser
 
-# Used Feeds
+# Example Feeds
 # CNN News - http://rss.cnn.com/rss/edition.rss
 # Fox News - http://feeds.foxnews.com/foxnews/latest
 # USA Today - http://rssfeeds.usatoday.com/UsatodaycomNation-TopStories
@@ -19,9 +19,9 @@ def listFeeds():
     for count, feed in enumerate(feeds):
       print(str(count + 1) + " - " + feed[1])
 
-def addFeed():
+def addFeed(feed):
     # Get CNN feed
-    response = feedparser.parse("http://rss.cnn.com/rss/edition.rss")
+    response = feedparser.parse(feed)
     
     # Open database connection
     connection = sqlite3.connect("tp1.db")
@@ -41,18 +41,18 @@ def addFeed():
     # Just be sure any changes have been committed or they will be lost.
     connection.close()
 
-def removeFeed():
+def removeFeed(feed):
     # Open database connection
     connection = sqlite3.connect("tp1.db")
     cursor = connection.cursor()
 
     # Delete all feeds
     cursor.execute("PRAGMA FOREIGN_KEYS = ON")
-    cursor.execute("DELETE FROM Feeds WHERE url='http://rss.cnn.com/rss/edition.rss'")
+    cursor.execute("DELETE FROM Feeds WHERE url=?", (feed,))
 
     # Save (commit) the changes
     connection.commit()
-    # We can also close the connection if we are done with it.
+    # We can also close the connection if we are done with it.s
     # Just be sure any changes have been committed or they will be lost.
     connection.close()
 
@@ -61,17 +61,21 @@ def menu():
 
     while True:
         print("\n1 - List all feeds")
-        print("2 - Add CNN feed")
-        print("3 - Remove CNN feed")
+        print("2 - Add feed from url")
+        print("3 - Remove feed from url")
         print("x - Exit Application\n")
         op = input().split()
         if op:
             if op[0] == "1":
                 listFeeds()
             elif op[0] == "2":
-                addFeed()
+                print("\nPaste the RSS feed you want to add: ")
+                feed = input()
+                addFeed(feed)
             elif op[0] == "3":
-                removeFeed()
+                print("\nPaste the RSS feed you want to remove: ")
+                feed = input()
+                removeFeed(feed)
             elif op[0] == "x":
                 break
 
