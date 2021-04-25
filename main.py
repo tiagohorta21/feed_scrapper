@@ -28,6 +28,9 @@ def listFeeds():
     for count, feed in enumerate(feeds):
       print(str(count + 1) + " - " + feed[1] + " | " + getActiveState(feed[4]) + " | URL: " + feed[2])
 
+    # We can also close the connection if we are done with it
+    connection.close()
+
 
 def addFeed(feed):
     # Parse received feed
@@ -47,7 +50,7 @@ def addFeed(feed):
 
     # Save (commit) the changes
     connection.commit()
-    # We can also close the connection if we are done with it.
+    # We can also close the connection if we are done with it
     # Just be sure any changes have been committed or they will be lost.
     connection.close()
 
@@ -63,7 +66,7 @@ def removeFeed(feed):
 
     # Save (commit) the changes
     connection.commit()
-    # We can also close the connection if we are done with it.s
+    # We can also close the connection if we are done with it
     # Just be sure any changes have been committed or they will be lost.
     connection.close()
 
@@ -78,7 +81,7 @@ def activateFeed(feed):
 
     # Save (commit) the changes
     connection.commit()
-    # We can also close the connection if we are done with it.s
+    # We can also close the connection if we are done with it
     # Just be sure any changes have been committed or they will be lost.
     connection.close()
 
@@ -93,7 +96,7 @@ def deactivateFeed(feed):
 
     # Save (commit) the changes
     connection.commit()
-    # We can also close the connection if we are done with it.s
+    # We can also close the connection if we are done with it
     # Just be sure any changes have been committed or they will be lost.
     connection.close()
 
@@ -108,6 +111,56 @@ def addFeedsFromTextFile():
     addFeed(line)
 
 
+def searchNewsTitle(searchField):
+    # Open database connection
+    connection = sqlite3.connect("tp1.db")
+    cursor = connection.cursor()
+
+    # Search within news title
+    cursor.execute("SELECT title FROM FeedEntries WHERE title LIKE ?", ('%' + searchField + '%',))
+    results = cursor.fetchall()
+
+    print("\nResults:")
+    for count, result in enumerate(results):
+      print(str(count + 1) + " - " + result[0]) 
+
+    # We can also close the connection if we are done with it
+    connection.close()
+
+
+def searchNewsSummary(searchField):
+    # Open database connection
+    connection = sqlite3.connect("tp1.db")
+    cursor = connection.cursor()
+
+    # Search within news title
+    cursor.execute("SELECT summary FROM FeedEntries WHERE summary LIKE ?", ('%' + searchField + '%',))
+    results = cursor.fetchall()
+
+    print("\nResults:")
+    for count, result in enumerate(results):
+      print(str(count + 1) + " - " + result[0]) 
+
+    # We can also close the connection if we are done with it
+    connection.close()    
+
+def searchNews(searchField):
+    # Open database connection
+    connection = sqlite3.connect("tp1.db")
+    cursor = connection.cursor()
+
+    # Search within news title
+    # Ask teacher about this query
+    cursor.execute("SELECT * FROM FeedEntries WHERE title OR summary OR published OR url LIKE ?", ('%' + searchField + '%',))
+    results = cursor.fetchall()
+
+    print("\nResults:")
+    for count, result in enumerate(results):
+      print(str(count + 1) + " - " + result[0]) 
+
+    # We can also close the connection if we are done with it
+    connection.close()    
+
 def menu():
     while True:
         print("\n1 - List all feeds")
@@ -116,6 +169,9 @@ def menu():
         print("4 - Activate Feed")
         print("5 - Deactivate Feed")
         print("6 - Add feeds from text file")
+        print("7 - Search news title")
+        print("8 - Search news summary")
+        print("9 - Search news")
         print("x - Exit Application\n")
         op = input().split()
         if op:
@@ -140,6 +196,18 @@ def menu():
             elif op[0] == "6":
                 print("\nAdd feeds from text file: ")
                 addFeedsFromTextFile()
+            elif op[0] == "7":
+                print("\nSearch within the news title: ")
+                searchField = input()
+                searchNewsTitle(searchField)
+            elif op[0] == "8":
+                print("\nSearch within the news summary: ")
+                searchField = input()
+                searchNewsSummary(searchField)
+            elif op[0] == "9":
+                print("\nSearch within the news: ")
+                searchField = input()
+                searchNews(searchField)
             elif op[0] == "x":
                 break
 
