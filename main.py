@@ -9,7 +9,7 @@ import feedparser
 
 
 def getActiveState(active):
-  if(active):
+  if active:
     return "Activated"
   else:
     return "Deactivated"
@@ -122,7 +122,7 @@ def searchNewsTitle(searchField):
 
     print("\nResults:")
     for count, result in enumerate(results):
-      print(str(count + 1) + " - " + result[0]) 
+      print(str(count + 1) + " - " + result[0])
 
     # We can also close the connection if we are done with it
     connection.close()
@@ -144,6 +144,7 @@ def searchNewsSummary(searchField):
     # We can also close the connection if we are done with it
     connection.close()    
 
+
 def searchNews(searchField):
     # Open database connection
     connection = sqlite3.connect("tp1.db")
@@ -160,6 +161,7 @@ def searchNews(searchField):
 
     # We can also close the connection if we are done with it
     connection.close()    
+
 
 def menu():
     while True:
