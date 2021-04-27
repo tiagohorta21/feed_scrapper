@@ -1,6 +1,9 @@
 # Modules
-import sqlite3
 import feedparser
+import sqlite3
+import threading
+import time
+
 
 # Example Feeds
 # CNN News - http://rss.cnn.com/rss/edition.rss
@@ -8,11 +11,16 @@ import feedparser
 # USA Today - http://rssfeeds.usatoday.com/UsatodaycomNation-TopStories
 
 
+def updateFeedEntries():
+    print("Getting new news...")
+    time.sleep(1)
+
+
 def getActiveState(active):
-  if(active):
-    return "Activated"
-  else:
-    return "Deactivated"
+    if (active):
+        return "Activated"
+    else:
+        return "Deactivated"
 
 
 def listFeeds():
@@ -26,7 +34,7 @@ def listFeeds():
 
     print("\nCurrent feeds:")
     for count, feed in enumerate(feeds):
-      print(str(count + 1) + " - " + feed[1] + " | " + getActiveState(feed[4]) + " | URL: " + feed[2])
+        print(str(count + 1) + " - " + feed[1] + " | " + getActiveState(feed[4]) + " | URL: " + feed[2])
 
     # We can also close the connection if we are done with it
     connection.close()
@@ -35,18 +43,21 @@ def listFeeds():
 def addFeed(feed):
     # Parse received feed
     response = feedparser.parse(feed)
-    
+
     # Open database connection
     connection = sqlite3.connect("tp1.db")
     cursor = connection.cursor()
 
     # Insert feed into database
-    cursor.execute("INSERT INTO Feeds VALUES (?,?,?,?,?)", (None, response.feed.title, response.href, response.updated, 1))
+    cursor.execute("INSERT INTO Feeds VALUES (?,?,?,?,?,?)",
+                   (None, response.feed.title, response.href, response.updated, 1, 1))
     feedId = cursor.lastrowid
     # Insert feed entries into database
     for entry in response.entries:
         # Insert feed and parameters into database
-        cursor.execute("INSERT INTO FeedEntries VALUES (?,?,?,?,?,?)", (None, getattr(entry, 'title', None), getattr(entry, 'summary', None), getattr(entry, 'published', None), getattr(entry, 'link', None), feedId))
+        cursor.execute("INSERT INTO FeedEntries VALUES (?,?,?,?,?,?)", (
+        None, getattr(entry, 'title', None), getattr(entry, 'summary', None), getattr(entry, 'published', None),
+        getattr(entry, 'link', None), feedId))
 
     # Save (commit) the changes
     connection.commit()
@@ -75,7 +86,7 @@ def activateFeed(feed):
     # Open database connection
     connection = sqlite3.connect("tp1.db")
     cursor = connection.cursor()
-    
+
     # Activate feed
     cursor.execute("UPDATE Feeds SET active='1' WHERE url=?", (feed,))
 
@@ -102,13 +113,13 @@ def deactivateFeed(feed):
 
 
 def addFeedsFromTextFile():
-  # Open file and read each line
-  file = open('feeds.txt', 'r')
-  lines = file.readlines()
+    # Open file and read each line
+    file = open('feeds.txt', 'r')
+    lines = file.readlines()
 
-  for line in lines:
-    print(f"Adding feed: {line}")
-    addFeed(line)
+    for line in lines:
+        print(f"Adding feed: {line}")
+        addFeed(line)
 
 
 def searchNewsTitle(searchField):
@@ -122,9 +133,9 @@ def searchNewsTitle(searchField):
 
     print("\nResults:")
     for count, result in enumerate(results):
-      print(str(count + 1) + " - " + result[0]) 
+        print(str(count + 1) + " - " + result[0])
 
-    # We can also close the connection if we are done with it
+        # We can also close the connection if we are done with it
     connection.close()
 
 
@@ -139,10 +150,11 @@ def searchNewsSummary(searchField):
 
     print("\nResults:")
     for count, result in enumerate(results):
-      print(str(count + 1) + " - " + result[0]) 
+        print(str(count + 1) + " - " + result[0])
 
-    # We can also close the connection if we are done with it
-    connection.close()    
+        # We can also close the connection if we are done with it
+    connection.close()
+
 
 def searchNews(searchField):
     # Open database connection
@@ -151,15 +163,17 @@ def searchNews(searchField):
 
     # Search within news title
     # Ask teacher about this query
-    cursor.execute("SELECT * FROM FeedEntries WHERE title OR summary OR published OR url LIKE ?", ('%' + searchField + '%',))
+    cursor.execute("SELECT * FROM FeedEntries WHERE title OR summary OR published OR url LIKE ?",
+                   ('%' + searchField + '%',))
     results = cursor.fetchall()
 
     print("\nResults:")
     for count, result in enumerate(results):
-      print(str(count + 1) + " - " + result[0]) 
+        print(str(count + 1) + " - " + result[0])
 
-    # We can also close the connection if we are done with it
-    connection.close()    
+        # We can also close the connection if we are done with it
+    connection.close()
+
 
 def menu():
     while True:
@@ -211,5 +225,8 @@ def menu():
             elif op[0] == "x":
                 break
 
+
 if __name__ == "__main__":
     menu()
+    updateNews = threading.Thread(target=updateFeedEntries)
+    updateNews.start()
