@@ -228,8 +228,21 @@ def searchNews(searchField):
 
 
 def addAlert(alert):
-    print(alert)
+    # Open database connection
+    connection = sqlite3.connect("tp1.db")
+    cursor = connection.cursor()
 
+    # Add a new alert
+    cursor.execute("INSERT INTO Alerts VALUES (?)", (alert,))
+
+    # Update all feeds with the alert
+    cursor.execute("UPDATE Feeds SET alertId=?", (alert,))
+
+    # Save (commit) the changes
+    connection.commit()
+    # We can also close the connection if we are done with it
+    # Just be sure any changes have been committed or they will be lost.
+    connection.close()
 
 def removeAlert():
     print("remove alert")
