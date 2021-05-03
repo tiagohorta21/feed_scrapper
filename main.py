@@ -4,6 +4,7 @@ import sqlite3
 import threading
 import time
 
+
 # Example Feeds
 # CNN News - http://rss.cnn.com/rss/edition.rss
 # Fox News - http://feeds.foxnews.com/foxnews/latest
@@ -226,6 +227,18 @@ def searchNews(searchField):
     connection.close()
 
 
+def addAlert(alert):
+    print(alert)
+
+
+def removeAlert():
+    print("remove alert")
+
+
+def listAlerts():
+    print("list alerts")
+
+
 def menu():
     while True:
         print("\n1 - List all feeds")
@@ -237,6 +250,9 @@ def menu():
         print("7 - Search news title")
         print("8 - Search news summary")
         print("9 - Search news")
+        print("10 - Add alert")
+        print("11 - Remove alert")
+        print("12 - List alerts")
         print("x - Exit Application\n")
         op = input().split()
         if op:
@@ -273,6 +289,14 @@ def menu():
                 print("\nSearch within the news: ")
                 searchField = input()
                 searchNews(searchField)
+            elif op[0] == "10":
+                print("\nAdd a keyword alert: ")
+                alert = input()
+                addAlert(alert)
+            elif op[0] == "11":
+                removeAlert()
+            elif op[0] == "12":
+                listAlerts()
             elif op[0] == "x":
                 # TODO: Kill all threads and exit the application
                 break
