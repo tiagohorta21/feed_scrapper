@@ -4,7 +4,6 @@ import sqlite3
 import threading
 import time
 
-
 # Example Feeds
 # CNN News - http://rss.cnn.com/rss/edition.rss
 # Fox News - http://feeds.foxnews.com/foxnews/latest
@@ -233,10 +232,11 @@ def addAlert(alert):
     cursor = connection.cursor()
 
     # Add a new alert
-    cursor.execute("INSERT INTO Alerts VALUES (?)", (alert,))
+    cursor.execute("INSERT INTO Alerts VALUES (?,?)", (None, alert,))
+    alertId = cursor.lastrowid
 
     # Update all feeds with the alert
-    cursor.execute("UPDATE Feeds SET alertId=?", (alert,))
+    cursor.execute("UPDATE Feeds SET alertId=?", (alertId,))
 
     # Save (commit) the changes
     connection.commit()
@@ -244,12 +244,50 @@ def addAlert(alert):
     # Just be sure any changes have been committed or they will be lost.
     connection.close()
 
-def removeAlert():
-    print("remove alert")
+
+def removeAlert(alerts):
+    print("\nSelect an alert to delete:")
+    selectedAlert = input()
+
+    # Open database connection
+    connection = sqlite3.connect("tp1.db")
+    cursor = connection.cursor()
+
+    alertId = None
+    for count, alert in enumerate(alerts):
+        if int(selectedAlert) == count + 1:
+            alertId = alert[0]
+
+    # Delete an alert
+    cursor.execute("PRAGMA FOREIGN_KEYS = ON")
+    cursor.execute("DELETE FROM Alerts WHERE id=?", (alertId,))
+
+    # Save (commit) the changes
+    connection.commit()
+    # We can also close the connection if we are done with it
+    # Just be sure any changes have been committed or they will be lost.
+    connection.close()
 
 
 def listAlerts():
-    print("list alerts")
+    # Open database connection
+    connection = sqlite3.connect("tp1.db")
+    cursor = connection.cursor()
+
+    # List all alerts from the database
+    cursor.execute("SELECT * FROM Alerts")
+    alerts = cursor.fetchall()
+
+    for count, alert in enumerate(alerts):
+        print(str(count + 1) + " - " + alert[1])
+
+    # Save (commit) the changes
+    connection.commit()
+    # We can also close the connection if we are done with it
+    # Just be sure any changes have been committed or they will be lost.
+    connection.close()
+
+    return alerts
 
 
 def menu():
@@ -307,7 +345,8 @@ def menu():
                 alert = input()
                 addAlert(alert)
             elif op[0] == "11":
-                removeAlert()
+                alerts = listAlerts()
+                removeAlert(alerts)
             elif op[0] == "12":
                 listAlerts()
             elif op[0] == "x":
