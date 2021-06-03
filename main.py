@@ -90,9 +90,9 @@ def addFeed(feed):
     cursor = connection.cursor()
 
     # Insert feed into database
-    cursor.execute("INSERT INTO Feeds VALUES (?,?,?,?,?,?)",
+    cursor.execute("INSERT INTO Feeds VALUES (?,?,?,?,?,?,?)",
                    (None, getattr(response.feed, 'title', None), getattr(response, 'href', None),
-                    getattr(response, 'updated', None), 1, 30))
+                    getattr(response, 'updated', None), 1, 30, None))
     feedId = cursor.lastrowid
 
     # Insert feed entries into database
